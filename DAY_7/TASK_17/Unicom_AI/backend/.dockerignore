@@ -1,0 +1,40 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Byte-compiled / optimized / DLL files
+*.pyc
+
+# Virtual envs
+.env
+.venv
+env/
+venv/
+ENV/
+
+# SQLite database (PostgreSQL is used in Docker)
+*.db
+*.sqlite
+*.sqlite3
+
+# Large dataset CSV files (mount as volume if needed)
+*.csv
+
+# Local uploads (mounted as a Docker volume)
+uploads/
+
+# ML model artifacts (large — exclude from image if not needed)
+# models/   ← keep models inside image so they load on start
+
+# IDE / OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore

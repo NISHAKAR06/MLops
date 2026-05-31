@@ -1,0 +1,790 @@
+{
+    "images": {
+        "uploads/images/product_saree_1.png": {
+            "bounding_boxes": [
+                {
+                    "label": "Saree",
+                    "box": [
+                        170,
+                        120,
+                        300,
+                        400
+                    ],
+                    "confidence": 0.98
+                }
+            ],
+            "ocr_results": [
+                {
+                    "text": "100% PURE SILK",
+                    "box": [
+                        190,
+                        420,
+                        260,
+                        30
+                    ]
+                }
+            ]
+        },
+        "uploads/images/product_saree_2.png": {
+            "bounding_boxes": [
+                {
+                    "label": "Saree",
+                    "box": [
+                        170,
+                        120,
+                        300,
+                        400
+                    ],
+                    "confidence": 0.98
+                }
+            ],
+            "ocr_results": [
+                {
+                    "text": "100% PURE SILK",
+                    "box": [
+                        190,
+                        420,
+                        260,
+                        30
+                    ]
+                }
+            ]
+        },
+        "uploads/images/product_cream_1.png": {
+            "bounding_boxes": [
+                {
+                    "label": "Cream",
+                    "box": [
+                        170,
+                        170,
+                        300,
+                        300
+                    ],
+                    "confidence": 0.98
+                }
+            ],
+            "ocr_results": [
+                {
+                    "text": "ORGANIC CREAM SPF 30",
+                    "box": [
+                        190,
+                        370,
+                        260,
+                        30
+                    ]
+                }
+            ]
+        },
+        "uploads/images/product_cream_2.png": {
+            "bounding_boxes": [
+                {
+                    "label": "Cream",
+                    "box": [
+                        170,
+                        170,
+                        300,
+                        300
+                    ],
+                    "confidence": 0.98
+                }
+            ],
+            "ocr_results": [
+                {
+                    "text": "ORGANIC CREAM SPF 30",
+                    "box": [
+                        190,
+                        370,
+                        260,
+                        30
+                    ]
+                }
+            ]
+        },
+        "uploads/images/product_smartphone_1.png": {
+            "bounding_boxes": [
+                {
+                    "label": "Smartphone",
+                    "box": [
+                        195,
+                        95,
+                        250,
+                        450
+                    ],
+                    "confidence": 0.98
+                }
+            ],
+            "ocr_results": [
+                {
+                    "text": "SMARTPHONE 5G",
+                    "box": [
+                        215,
+                        445,
+                        210,
+                        30
+                    ]
+                }
+            ]
+        },
+        "uploads/images/product_smartphone_2.png": {
+            "bounding_boxes": [
+                {
+                    "label": "Smartphone",
+                    "box": [
+                        195,
+                        95,
+                        250,
+                        450
+                    ],
+                    "confidence": 0.98
+                }
+            ],
+            "ocr_results": [
+                {
+                    "text": "SMARTPHONE 5G",
+                    "box": [
+                        215,
+                        445,
+                        210,
+                        30
+                    ]
+                }
+            ]
+        },
+        "uploads/images/product_water_bottle_1.png": {
+            "bounding_boxes": [
+                {
+                    "label": "Water Bottle",
+                    "box": [
+                        220,
+                        95,
+                        200,
+                        450
+                    ],
+                    "confidence": 0.98
+                }
+            ],
+            "ocr_results": [
+                {
+                    "text": "STAINLESS BOTTLE 750ml",
+                    "box": [
+                        240,
+                        445,
+                        160,
+                        30
+                    ]
+                }
+            ]
+        },
+        "uploads/images/product_water_bottle_2.png": {
+            "bounding_boxes": [
+                {
+                    "label": "Water Bottle",
+                    "box": [
+                        220,
+                        95,
+                        200,
+                        450
+                    ],
+                    "confidence": 0.98
+                }
+            ],
+            "ocr_results": [
+                {
+                    "text": "STAINLESS BOTTLE 750ml",
+                    "box": [
+                        240,
+                        445,
+                        160,
+                        30
+                    ]
+                }
+            ]
+        }
+    },
+    "videos": {
+        "uploads/videos/saree_commercial.mp4": {
+            "product_category": "Saree",
+            "total_duration_sec": 15,
+            "keyframes": [
+                {
+                    "frame_index": 0,
+                    "timestamp": "0:00",
+                    "file_path": "uploads/videos/saree_commercial/frame_0.png",
+                    "bounding_boxes": [
+                        {
+                            "label": "Saree",
+                            "box": [
+                                177,
+                                150,
+                                285,
+                                380
+                            ],
+                            "confidence": 0.95
+                        }
+                    ],
+                    "ocr_results": [
+                        {
+                            "text": "100% PURE SILK",
+                            "box": [
+                                197,
+                                430,
+                                245,
+                                30
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "frame_index": 1,
+                    "timestamp": "0:03",
+                    "file_path": "uploads/videos/saree_commercial/frame_1.png",
+                    "bounding_boxes": [
+                        {
+                            "label": "Saree",
+                            "box": [
+                                196,
+                                116,
+                                306,
+                                408
+                            ],
+                            "confidence": 0.95
+                        }
+                    ],
+                    "ocr_results": [
+                        {
+                            "text": "100% PURE SILK",
+                            "box": [
+                                216,
+                                424,
+                                266,
+                                30
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "frame_index": 2,
+                    "timestamp": "0:06",
+                    "file_path": "uploads/videos/saree_commercial/frame_2.png",
+                    "bounding_boxes": [
+                        {
+                            "label": "Saree",
+                            "box": [
+                                161,
+                                86,
+                                314,
+                                419
+                            ],
+                            "confidence": 0.95
+                        }
+                    ],
+                    "ocr_results": [
+                        {
+                            "text": "100% PURE SILK",
+                            "box": [
+                                181,
+                                405,
+                                274,
+                                30
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "frame_index": 3,
+                    "timestamp": "0:09",
+                    "file_path": "uploads/videos/saree_commercial/frame_3.png",
+                    "bounding_boxes": [
+                        {
+                            "label": "Saree",
+                            "box": [
+                                60,
+                                22,
+                                306,
+                                408
+                            ],
+                            "confidence": 0.95
+                        }
+                    ],
+                    "ocr_results": [
+                        {
+                            "text": "100% PURE SILK",
+                            "box": [
+                                80,
+                                330,
+                                266,
+                                30
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "frame_index": 4,
+                    "timestamp": "0:012",
+                    "file_path": "uploads/videos/saree_commercial/frame_4.png",
+                    "bounding_boxes": [
+                        {
+                            "label": "Saree",
+                            "box": [
+                                -722,
+                                -651,
+                                282,
+                                377
+                            ],
+                            "confidence": 0.95
+                        }
+                    ],
+                    "ocr_results": [
+                        {
+                            "text": "100% PURE SILK",
+                            "box": [
+                                -702,
+                                -374,
+                                242,
+                                30
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "uploads/videos/cream_commercial.mp4": {
+            "product_category": "Cream",
+            "total_duration_sec": 15,
+            "keyframes": [
+                {
+                    "frame_index": 0,
+                    "timestamp": "0:00",
+                    "file_path": "uploads/videos/cream_commercial/frame_0.png",
+                    "bounding_boxes": [
+                        {
+                            "label": "Cream",
+                            "box": [
+                                177,
+                                197,
+                                285,
+                                285
+                            ],
+                            "confidence": 0.95
+                        }
+                    ],
+                    "ocr_results": [
+                        {
+                            "text": "ORGANIC CREAM SPF 30",
+                            "box": [
+                                197,
+                                382,
+                                245,
+                                30
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "frame_index": 1,
+                    "timestamp": "0:03",
+                    "file_path": "uploads/videos/cream_commercial/frame_1.png",
+                    "bounding_boxes": [
+                        {
+                            "label": "Cream",
+                            "box": [
+                                196,
+                                167,
+                                306,
+                                306
+                            ],
+                            "confidence": 0.95
+                        }
+                    ],
+                    "ocr_results": [
+                        {
+                            "text": "ORGANIC CREAM SPF 30",
+                            "box": [
+                                216,
+                                373,
+                                266,
+                                30
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "frame_index": 2,
+                    "timestamp": "0:06",
+                    "file_path": "uploads/videos/cream_commercial/frame_2.png",
+                    "bounding_boxes": [
+                        {
+                            "label": "Cream",
+                            "box": [
+                                161,
+                                139,
+                                314,
+                                314
+                            ],
+                            "confidence": 0.95
+                        }
+                    ],
+                    "ocr_results": [
+                        {
+                            "text": "ORGANIC CREAM SPF 30",
+                            "box": [
+                                181,
+                                353,
+                                274,
+                                30
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "frame_index": 3,
+                    "timestamp": "0:09",
+                    "file_path": "uploads/videos/cream_commercial/frame_3.png",
+                    "bounding_boxes": [
+                        {
+                            "label": "Cream",
+                            "box": [
+                                60,
+                                73,
+                                306,
+                                306
+                            ],
+                            "confidence": 0.95
+                        }
+                    ],
+                    "ocr_results": [
+                        {
+                            "text": "ORGANIC CREAM SPF 30",
+                            "box": [
+                                80,
+                                279,
+                                266,
+                                30
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "frame_index": 4,
+                    "timestamp": "0:012",
+                    "file_path": "uploads/videos/cream_commercial/frame_4.png",
+                    "bounding_boxes": [
+                        {
+                            "label": "Cream",
+                            "box": [
+                                -722,
+                                -603,
+                                282,
+                                282
+                            ],
+                            "confidence": 0.95
+                        }
+                    ],
+                    "ocr_results": [
+                        {
+                            "text": "ORGANIC CREAM SPF 30",
+                            "box": [
+                                -702,
+                                -421,
+                                242,
+                                30
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "uploads/videos/smartphone_commercial.mp4": {
+            "product_category": "Smartphone",
+            "total_duration_sec": 15,
+            "keyframes": [
+                {
+                    "frame_index": 0,
+                    "timestamp": "0:00",
+                    "file_path": "uploads/videos/smartphone_commercial/frame_0.png",
+                    "bounding_boxes": [
+                        {
+                            "label": "Smartphone",
+                            "box": [
+                                201,
+                                126,
+                                237,
+                                427
+                            ],
+                            "confidence": 0.95
+                        }
+                    ],
+                    "ocr_results": [
+                        {
+                            "text": "SMARTPHONE 5G",
+                            "box": [
+                                221,
+                                453,
+                                197,
+                                30
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "frame_index": 1,
+                    "timestamp": "0:03",
+                    "file_path": "uploads/videos/smartphone_commercial/frame_1.png",
+                    "bounding_boxes": [
+                        {
+                            "label": "Smartphone",
+                            "box": [
+                                221,
+                                90,
+                                255,
+                                459
+                            ],
+                            "confidence": 0.95
+                        }
+                    ],
+                    "ocr_results": [
+                        {
+                            "text": "SMARTPHONE 5G",
+                            "box": [
+                                241,
+                                449,
+                                215,
+                                30
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "frame_index": 2,
+                    "timestamp": "0:06",
+                    "file_path": "uploads/videos/smartphone_commercial/frame_2.png",
+                    "bounding_boxes": [
+                        {
+                            "label": "Smartphone",
+                            "box": [
+                                187,
+                                60,
+                                262,
+                                472
+                            ],
+                            "confidence": 0.95
+                        }
+                    ],
+                    "ocr_results": [
+                        {
+                            "text": "SMARTPHONE 5G",
+                            "box": [
+                                207,
+                                432,
+                                222,
+                                30
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "frame_index": 3,
+                    "timestamp": "0:09",
+                    "file_path": "uploads/videos/smartphone_commercial/frame_3.png",
+                    "bounding_boxes": [
+                        {
+                            "label": "Smartphone",
+                            "box": [
+                                85,
+                                -4,
+                                255,
+                                459
+                            ],
+                            "confidence": 0.95
+                        }
+                    ],
+                    "ocr_results": [
+                        {
+                            "text": "SMARTPHONE 5G",
+                            "box": [
+                                105,
+                                355,
+                                215,
+                                30
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "frame_index": 4,
+                    "timestamp": "0:012",
+                    "file_path": "uploads/videos/smartphone_commercial/frame_4.png",
+                    "bounding_boxes": [
+                        {
+                            "label": "Smartphone",
+                            "box": [
+                                -699,
+                                -674,
+                                235,
+                                424
+                            ],
+                            "confidence": 0.95
+                        }
+                    ],
+                    "ocr_results": [
+                        {
+                            "text": "SMARTPHONE 5G",
+                            "box": [
+                                -679,
+                                -350,
+                                195,
+                                30
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "uploads/videos/water_bottle_commercial.mp4": {
+            "product_category": "Water Bottle",
+            "total_duration_sec": 15,
+            "keyframes": [
+                {
+                    "frame_index": 0,
+                    "timestamp": "0:00",
+                    "file_path": "uploads/videos/water_bottle_commercial/frame_0.png",
+                    "bounding_boxes": [
+                        {
+                            "label": "Water Bottle",
+                            "box": [
+                                225,
+                                126,
+                                190,
+                                427
+                            ],
+                            "confidence": 0.95
+                        }
+                    ],
+                    "ocr_results": [
+                        {
+                            "text": "STAINLESS BOTTLE 750ml",
+                            "box": [
+                                245,
+                                453,
+                                150,
+                                30
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "frame_index": 1,
+                    "timestamp": "0:03",
+                    "file_path": "uploads/videos/water_bottle_commercial/frame_1.png",
+                    "bounding_boxes": [
+                        {
+                            "label": "Water Bottle",
+                            "box": [
+                                247,
+                                90,
+                                204,
+                                459
+                            ],
+                            "confidence": 0.95
+                        }
+                    ],
+                    "ocr_results": [
+                        {
+                            "text": "STAINLESS BOTTLE 750ml",
+                            "box": [
+                                267,
+                                449,
+                                164,
+                                30
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "frame_index": 2,
+                    "timestamp": "0:06",
+                    "file_path": "uploads/videos/water_bottle_commercial/frame_2.png",
+                    "bounding_boxes": [
+                        {
+                            "label": "Water Bottle",
+                            "box": [
+                                213,
+                                60,
+                                209,
+                                472
+                            ],
+                            "confidence": 0.95
+                        }
+                    ],
+                    "ocr_results": [
+                        {
+                            "text": "STAINLESS BOTTLE 750ml",
+                            "box": [
+                                233,
+                                432,
+                                169,
+                                30
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "frame_index": 3,
+                    "timestamp": "0:09",
+                    "file_path": "uploads/videos/water_bottle_commercial/frame_3.png",
+                    "bounding_boxes": [
+                        {
+                            "label": "Water Bottle",
+                            "box": [
+                                111,
+                                -4,
+                                204,
+                                459
+                            ],
+                            "confidence": 0.95
+                        }
+                    ],
+                    "ocr_results": [
+                        {
+                            "text": "STAINLESS BOTTLE 750ml",
+                            "box": [
+                                131,
+                                355,
+                                164,
+                                30
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "frame_index": 4,
+                    "timestamp": "0:012",
+                    "file_path": "uploads/videos/water_bottle_commercial/frame_4.png",
+                    "bounding_boxes": [
+                        {
+                            "label": "Water Bottle",
+                            "box": [
+                                -675,
+                                -674,
+                                188,
+                                424
+                            ],
+                            "confidence": 0.95
+                        }
+                    ],
+                    "ocr_results": [
+                        {
+                            "text": "STAINLESS BOTTLE 750ml",
+                            "box": [
+                                -655,
+                                -350,
+                                148,
+                                30
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

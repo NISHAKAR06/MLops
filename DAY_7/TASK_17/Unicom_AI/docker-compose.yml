@@ -1,0 +1,93 @@
+# ── Networks ─────────────────────────────────────────────────────────────────
+networks:
+  unicom-net:
+    driver: bridge
+
+# ── Volumes ──────────────────────────────────────────────────────────────────
+volumes:
+  pgdata:
+
+# ── Services ─────────────────────────────────────────────────────────────────
+services:
+
+  # ── PostgreSQL Database ───────────────────────────────────────────────────
+  postgres-db:
+    image: postgres:15-alpine
+    container_name: launchops-postgres-db
+    environment:
+      POSTGRES_USER: launchops
+      POSTGRES_PASSWORD: launchopssecretpassword123
+      POSTGRES_DB: launchops_catalog
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - unicom-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U launchops -d launchops_catalog"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    restart: unless-stopped
+
+  # ── FastAPI Backend ───────────────────────────────────────────────────────
+  web-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: launchops-web-backend
+    environment:
+      - DATABASE_URL=postgresql://launchops:launchopssecretpassword123@postgres-db:5432/launchops_catalog
+      - UPLOAD_DIR=/workspace/uploads
+      - SECRET_KEY=supersecretkeyforlaunchopsaiproductiongrade123!#%
+    volumes:
+      - ./backend/app/uploads:/workspace/uploads
+    networks:
+      - unicom-net
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  # ── TanStack Start SSR Frontend ───────────────────────────────────────────
+  web-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: launchops-web-frontend
+    environment:
+      - NODE_ENV=production
+      # All API calls from SSR server go through the internal Docker network
+      - VITE_API_BASE_URL=http://web-backend:8000
+    networks:
+      - unicom-net
+    depends_on:
+      web-backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ── Nginx Reverse Proxy ───────────────────────────────────────────────────
+  nginx:
+    image: nginx:1.31.1-alpine
+    container_name: launchops-nginx
+    ports:
+      - "80:80"
+      - "3000:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./frontend/dist/client:/usr/share/nginx/html/client:ro
+    depends_on:
+      web-backend:
+        condition: service_healthy
+      web-frontend:
+        condition: service_started
+    networks:
+      - unicom-net

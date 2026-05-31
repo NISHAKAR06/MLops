@@ -1,0 +1,27 @@
+# Dependencies & build artifacts (copied selectively in Dockerfile)
+node_modules/
+
+# Git & IDE
+.git/
+.gitignore
+.vscode/
+.idea/
+.tanstack/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+
+# Logs
+*.log
+npm-debug.log*
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Test
+coverage/
