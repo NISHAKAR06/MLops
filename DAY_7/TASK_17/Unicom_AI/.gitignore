@@ -64,8 +64,7 @@ backend/venv.bak/
 # Local databases & storage
 backend/*.db
 backend/launchops.db
-backend/uploads/*
-!backend/uploads/.gitkeep
+backend/app/uploads/*
 
 # ML Model Pickles / Weights
 backend/models/*.pkl
