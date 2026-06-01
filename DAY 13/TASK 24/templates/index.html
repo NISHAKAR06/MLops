@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YOLO Object Detection</title>
+  <style>
+    /* ── Reset & Base ───────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f0f1a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Header ─────────────────────────────────────────── */
+    header {
+      width: 100%;
+      padding: 20px 40px;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .logo {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    header h1 { font-size: 1.2rem; font-weight: 600; color: #f1f5f9; }
+    header span { font-size: 0.8rem; color: #64748b; margin-left: 4px; }
+
+    /* ── Main Card ──────────────────────────────────────── */
+    main {
+      width: 100%;
+      max-width: 860px;
+      padding: 48px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .hero {
+      text-align: center;
+    }
+    .hero h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #a78bfa, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+    .hero p {
+      color: #94a3b8;
+      font-size: 0.95rem;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* ── Upload Zone ────────────────────────────────────── */
+    .upload-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 32px;
+    }
+
+    #drop-zone {
+      border: 2px dashed rgba(124, 58, 237, 0.5);
+      border-radius: 14px;
+      padding: 48px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    #drop-zone:hover, #drop-zone.dragover {
+      border-color: #7c3aed;
+      background: rgba(124, 58, 237, 0.08);
+    }
+    #drop-zone .icon { font-size: 3rem; margin-bottom: 12px; }
+    #drop-zone p { color: #94a3b8; font-size: 0.9rem; }
+    #drop-zone strong { color: #a78bfa; }
+    #file-input { display: none; }
+
+    /* ── Preview ────────────────────────────────────────── */
+    #preview-section { display: none; margin-top: 20px; }
+    #preview-img {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      max-height: 300px;
+      object-fit: contain;
+      background: #0a0a14;
+    }
+    .preview-name {
+      font-size: 0.82rem;
+      color: #64748b;
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    /* ── Button ─────────────────────────────────────────── */
+    #predict-btn {
+      margin-top: 20px;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      display: none;
+    }
+    #predict-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    #predict-btn:active { transform: translateY(0); }
+    #predict-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ── Loader ─────────────────────────────────────────── */
+    #loader {
+      display: none;
+      text-align: center;
+      padding: 24px;
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid rgba(124,58,237,0.3);
+      border-top-color: #7c3aed;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Results ────────────────────────────────────────── */
+    #results-section { display: none; }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .results-header h3 { font-size: 1.1rem; font-weight: 600; }
+    .badge {
+      background: rgba(124, 58, 237, 0.2);
+      color: #a78bfa;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .detection-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .detection-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 14px 18px;
+      animation: fadeIn 0.3s ease forwards;
+      opacity: 0;
+    }
+    @keyframes fadeIn { to { opacity: 1; } }
+
+    .det-num {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .det-info { flex: 1; }
+    .det-name { font-weight: 600; font-size: 0.95rem; text-transform: capitalize; }
+    .det-conf { font-size: 0.8rem; color: #64748b; margin-top: 2px; }
+    .conf-bar-wrap {
+      width: 100px;
+      height: 6px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .conf-bar {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #7c3aed, #2563eb);
+      transition: width 0.6s ease;
+    }
+
+    .no-detections {
+      text-align: center;
+      padding: 24px;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .annotated-wrap { margin-top: 20px; }
+    .annotated-wrap h4 { font-size: 0.9rem; color: #94a3b8; margin-bottom: 10px; }
+    #annotated-img {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* ── Error ──────────────────────────────────────────── */
+    #error-box {
+      display: none;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 12px;
+      padding: 16px 20px;
+      color: #fca5a5;
+      font-size: 0.9rem;
+      margin-top: 16px;
+    }
+
+    /* ── Reset Link ─────────────────────────────────────── */
+    #reset-btn {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #94a3b8;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+      margin-top: 16px;
+      width: 100%;
+    }
+    #reset-btn:hover { border-color: rgba(255,255,255,0.25); color: #e2e8f0; }
+
+    footer {
+      color: #334155;
+      font-size: 0.78rem;
+      padding: 24px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">🎯</div>
+    <div>
+      <h1>YOLO Object Detection <span>| MLOps</span></h1>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <h2>AI-Powered Object Detection</h2>
+      <p>Upload an image and let the YOLO ONNX model detect and classify objects in real-time.</p>
+    </div>
+
+    <div class="upload-card">
+      <!-- Drop Zone -->
+      <div id="drop-zone" onclick="document.getElementById('file-input').click()">
+        <div class="icon">🖼️</div>
+        <p><strong>Click to upload</strong> or drag &amp; drop</p>
+        <p style="margin-top:6px; font-size:0.8rem;">Supports JPG, PNG, WEBP</p>
+        <input type="file" id="file-input" accept="image/*" />
+      </div>
+
+      <!-- Image Preview -->
+      <div id="preview-section">
+        <img id="preview-img" src="" alt="Preview" />
+        <p class="preview-name" id="preview-name"></p>
+      </div>
+
+      <!-- Predict Button -->
+      <button id="predict-btn" onclick="runPrediction()">🔍 Run Detection</button>
+
+      <!-- Error Box -->
+      <div id="error-box"></div>
+    </div>
+
+    <!-- Loader -->
+    <div id="loader">
+      <div class="spinner"></div>
+      Running YOLO inference... please wait
+    </div>
+
+    <!-- Results -->
+    <div class="upload-card" id="results-section">
+      <div class="results-header">
+        <h3>Detection Results</h3>
+        <span class="badge" id="count-badge">0 objects</span>
+      </div>
+      <ul class="detection-list" id="detection-list"></ul>
+
+      <div class="annotated-wrap">
+        <h4>📸 Annotated Image</h4>
+        <img id="annotated-img" src="" alt="Annotated result" />
+      </div>
+
+      <button id="reset-btn" onclick="resetAll()">↩ Detect Another Image</button>
+    </div>
+  </main>
+
+  <footer>MLOps DAY 13 · TASK 24 · YOLO ONNX Flask App</footer>
+
+  <script>
+    const dropZone   = document.getElementById('drop-zone');
+    const fileInput  = document.getElementById('file-input');
+    const previewSec = document.getElementById('preview-section');
+    const previewImg = document.getElementById('preview-img');
+    const previewName= document.getElementById('preview-name');
+    const predictBtn = document.getElementById('predict-btn');
+    const loader     = document.getElementById('loader');
+    const resultsSec = document.getElementById('results-section');
+    const errorBox   = document.getElementById('error-box');
+
+    let selectedFile = null;
+
+    // Drag & Drop
+    dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+    });
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files[0]) handleFile(fileInput.files[0]);
+    });
+
+    function handleFile(file) {
+      selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = e => {
+        previewImg.src = e.target.result;
+        previewName.textContent = file.name;
+        previewSec.style.display = 'block';
+        predictBtn.style.display = 'block';
+        resultsSec.style.display = 'none';
+        errorBox.style.display   = 'none';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function runPrediction() {
+      if (!selectedFile) return;
+
+      predictBtn.disabled    = true;
+      loader.style.display   = 'block';
+      resultsSec.style.display = 'none';
+      errorBox.style.display   = 'none';
+
+      const formData = new FormData();
+      formData.append('image', selectedFile);
+
+      try {
+        const res  = await fetch('/predict', { method: 'POST', body: formData });
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.error || 'Prediction failed');
+
+        showResults(data);
+      } catch (err) {
+        errorBox.textContent  = '❌ Error: ' + err.message;
+        errorBox.style.display = 'block';
+      } finally {
+        predictBtn.disabled  = false;
+        loader.style.display = 'none';
+      }
+    }
+
+    function showResults(data) {
+      const list = document.getElementById('detection-list');
+      const badge = document.getElementById('count-badge');
+
+      badge.textContent = `${data.total} object${data.total !== 1 ? 's' : ''} found`;
+      list.innerHTML = '';
+
+      if (data.detections.length === 0) {
+        list.innerHTML = '<div class="no-detections">🔍 No objects detected in this image.</div>';
+      } else {
+        data.detections.forEach((det, i) => {
+          const pct = parseFloat(det.confidence);
+          const li  = document.createElement('li');
+          li.className = 'detection-item';
+          li.style.animationDelay = `${i * 0.08}s`;
+          li.innerHTML = `
+            <div class="det-num">${det.id}</div>
+            <div class="det-info">
+              <div class="det-name">${det.class}</div>
+              <div class="det-conf">Confidence: ${det.confidence}</div>
+            </div>
+            <div class="conf-bar-wrap">
+              <div class="conf-bar" style="width: ${pct}"></div>
+            </div>`;
+          list.appendChild(li);
+        });
+      }
+
+      document.getElementById('annotated-img').src = 'data:image/jpeg;base64,' + data.annotated_image;
+      resultsSec.style.display = 'block';
+    }
+
+    function resetAll() {
+      selectedFile = null;
+      fileInput.value = '';
+      previewSec.style.display   = 'none';
+      predictBtn.style.display   = 'none';
+      resultsSec.style.display   = 'none';
+      errorBox.style.display     = 'none';
+      previewImg.src = '';
+    }
+  </script>
+</body>
+</html>
