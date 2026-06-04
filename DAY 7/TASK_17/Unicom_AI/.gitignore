@@ -85,3 +85,4 @@ backend/.ruff_cache/
 # ==========================================
 .gemini/
 frontend/.tanstack/
+DAY 15/TASK 26/backend/.env
