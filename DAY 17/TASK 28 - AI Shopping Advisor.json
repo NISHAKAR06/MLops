@@ -1,0 +1,570 @@
+{
+  "name": "AI Shopping Advisor",
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const input = $json;\n\nconst productUrl =\n  input.productUrl ||\n  input[\"Product URL\"] ||\n  \"\";\n\nif (!productUrl) {\n  throw new Error(\"Product URL is missing\");\n}\n\nconst trimmed = productUrl.trim();\n\nconst amazonPattern =\n  /(amzn\\.in|amazon\\.(in|com|co\\.uk|de|fr|it|es|ca|com\\.au|co\\.jp))/i;\n\nconst flipkartPattern =\n  /flipkart\\.com/i;\n\nconst isAmazon = amazonPattern.test(trimmed);\nconst isFlipkart = flipkartPattern.test(trimmed);\n\nif (!isAmazon && !isFlipkart) {\n  throw new Error(\n    \"UNSUPPORTED_URL: Only Amazon and Flipkart product URLs are supported.\"\n  );\n}\n\nreturn {\n  json: {\n    productUrl: trimmed,\n    platform: isAmazon ? \"amazon\" : \"flipkart\",\n    submittedAt: new Date().toISOString()\n  }\n};"
+      },
+      "id": "e8aea2d4-09db-408c-88e3-53e45f278724",
+      "name": "Validate URL",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -864,
+        -96
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const html = $json.body?.data || $json.data || '';\n\nconst productUrl = $('Validate URL').first().json.productUrl;\nconst platform = $('Validate URL').first().json.platform;\n\n// Product Title\nconst titleMatch =\n  html.match(/<title>(.*?)<\\/title>/i);\n\nconst productName =\n  titleMatch\n    ? titleMatch[1]\n        .replace(': Amazon.in', '')\n        .replace('Amazon.in', '')\n        .trim()\n    : 'Unknown Product';\n\n// Price Extraction\nconst priceMatch =\n  html.match(/₹\\s*([0-9,]+)/i) ||\n  html.match(/a-price-whole[^>]*>([0-9,]+)/i) ||\n  html.match(/\"price\":\"([0-9,.]+)\"/i) ||\n  html.match(/\"displayPrice\":\"₹?([0-9,.]+)\"/i);\n\nconst currentPrice =\n  priceMatch\n    ? Number(priceMatch[1].replace(/,/g, ''))\n    : 0;\n\n// Rating Extraction\nconst ratingMatch =\n  html.match(/([0-9.]+)\\s+out of 5 stars/i) ||\n  html.match(/\"rating\":\"([0-9.]+)\"/i);\n\nconst rating =\n  ratingMatch\n    ? parseFloat(ratingMatch[1])\n    : 0;\n\n// Review Count Extraction\nconst reviewMatch =\n  html.match(/([0-9,]+)\\s+ratings/i) ||\n  html.match(/([0-9,]+)\\s+global ratings/i);\n\nconst reviewCount =\n  reviewMatch\n    ? Number(reviewMatch[1].replace(/,/g, ''))\n    : 0;\n\n// Availability\nconst availability =\n  html.includes('In stock')\n    ? 'In Stock'\n    : html.includes('Currently unavailable')\n    ? 'Out of Stock'\n    : 'Unknown';\n\n// Category\nconst categoryMatch =\n  html.match(/nav-a-content[^>]*>(.*?)</i);\n\nconst category =\n  categoryMatch\n    ? categoryMatch[1].trim()\n    : 'Unknown';\n\n// Image\nconst imageMatch =\n  html.match(/\"large\":\"(https:[^\"]+)\"/i);\n\nconst imageUrl =\n  imageMatch\n    ? imageMatch[1]\n    : '';\n\n// Discount\nlet originalPrice = currentPrice;\nlet discountPercent = 0;\n\nconst mrpMatch =\n  html.match(/M\\.R\\.P\\.\\s*₹\\s*([0-9,]+)/i);\n\nif (mrpMatch) {\n  originalPrice = Number(\n    mrpMatch[1].replace(/,/g, '')\n  );\n\n  if (\n    originalPrice > currentPrice &&\n    currentPrice > 0\n  ) {\n    discountPercent = Math.round(\n      ((originalPrice - currentPrice) /\n        originalPrice) *\n        100\n    );\n  }\n}\n\nreturn [{\n  json: {\n    productUrl,\n    platform,\n    productName,\n    currentPrice,\n    originalPrice,\n    discountPercent,\n    rating,\n    reviewCount,\n    category,\n    availability,\n    imageUrl,\n\n    // DEBUG\n    priceMatches: html.match(/₹\\s*[0-9,]+/g) || [],\n\n    scrapedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "47d42818-c9d4-4efa-ac71-cbc6292a4aff",
+      "name": "Process & Normalize Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        -128
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const ai = $input.first().json;\nconst product = $('Process & Normalize Data').first().json;\n\nreturn [{\n  json: {\n    timestamp: new Date().toISOString(),\n\n    productUrl: product.productUrl,\n    platform: product.platform,\n    productName: product.productName,\n\n    currentPrice: product.currentPrice,\n    originalPrice: product.originalPrice,\n    discountPercent: product.discountPercent,\n\n    rating: product.rating,\n    reviewCount: product.reviewCount,\n\n    category: product.category,\n    availability: product.availability,\n    imageUrl: product.imageUrl,\n\n    buyScore: ai.buyScore || 0,\n    recommendation: ai.recommendation || \"WAIT\",\n\n    pros: ai.pros || [],\n    cons: ai.cons || [],\n    riskFactors: ai.riskFactors || [],\n\n    explanation: ai.explanation || \"No explanation provided.\",\n    priceAssessment: ai.priceAssessment || \"FAIR\",\n    bestTimeToBuy: ai.bestTimeToBuy || \"No specific advice.\",\n\n    prosFlat: Array.isArray(ai.pros)\n      ? ai.pros.join(\" | \")\n      : \"N/A\",\n\n    consFlat: Array.isArray(ai.cons)\n      ? ai.cons.join(\" | \")\n      : \"N/A\",\n\n    risksFlat: Array.isArray(ai.riskFactors)\n      ? ai.riskFactors.join(\" | \")\n      : \"N/A\"\n  }\n}];"
+      },
+      "id": "1693d204-c58d-499a-86bb-1055bbef90b4",
+      "name": "Parse AI Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        144,
+        -144
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "19EGAPS3N_Q3X1NvFhCiVTqHJri_QoC4HEh4qGVSfySs",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/1gcFFdLMr4CW3Uts-DWBGYQe_1njEI_asT1SMaNtdeZs/edit?gid=0#gid=0",
+          "__regex": "https:\\/\\/docs\\.google\\.com\\/spreadsheets\\/d\\/[0-9a-zA-Z\\-_]+.*\\#gid=([0-9]+)"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $json.timestamp }}",
+            "Product URL": "={{ $json.productUrl }}",
+            "Platform": "={{ $json.platform }}",
+            "Product Name": "={{ $json.productName }}",
+            "Current Price": "={{ Number($json.currentPrice || 0) }}",
+            "Original Price": "={{ $json.originalPrice }}",
+            "Discount %": "={{ $json.discountPercent }}",
+            "Rating": "={{ $json.rating }}",
+            "Review Count": "={{ $json.reviewCount }}",
+            "Category": "={{ $json.category }}",
+            "Availability": "={{ $json.availability }}",
+            "Buy Score": "={{ $json.buyScore }}",
+            "Recommendation": "={{ $json.recommendation }}",
+            "Price Assessment": "={{ $json.priceAssessment }}",
+            "Pros": "={{ String($json.prosFlat || \"N/A\") }}",
+            "Cons": "={{ String($json.consFlat || \"N/A\") }}",
+            "Risks": "={{ String($json.risksFlat || \"N/A\") }}",
+            "Explanation": "={{ $json.explanation }}",
+            "Best Time to Buy": "={{ $json.bestTimeToBuy }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Product URL",
+              "displayName": "Product URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Platform",
+              "displayName": "Platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Current Price",
+              "displayName": "Current Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Original Price",
+              "displayName": "Original Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Discount %",
+              "displayName": "Discount %",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Rating",
+              "displayName": "Rating",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Review Count",
+              "displayName": "Review Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Availability",
+              "displayName": "Availability",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Buy Score",
+              "displayName": "Buy Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Recommendation",
+              "displayName": "Recommendation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Price Assessment",
+              "displayName": "Price Assessment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Pros",
+              "displayName": "Pros",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Cons",
+              "displayName": "Cons",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Risks",
+              "displayName": "Risks",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Explanation",
+              "displayName": "Explanation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Best Time to Buy",
+              "displayName": "Best Time to Buy",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "35c2b0d3-7a6f-4ab3-ac95-6fd1ecff9bcb",
+      "name": "Save to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        352,
+        -160
+      ],
+      "notesInFlow": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "AKBvxszaFc8LGwjF",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ─── Classify Error ──────────────────────────────────────────────────────────\nconst err = $input.first().json;\nconst raw = err.message || err.error || String(err) || 'Unknown error';\n\nlet code     = 'INTERNAL_ERROR';\nlet httpCode = 500;\nlet message  = raw;\n\nif(raw.startsWith('INVALID_INPUT'))      { code = 'INVALID_INPUT';        httpCode = 400; }\nelse if (raw.startsWith('INVALID_URL'))         { code = 'INVALID_URL';          httpCode = 400; }\nelse if (raw.startsWith('UNSUPPORTED_URL'))     { code = 'UNSUPPORTED_URL';      httpCode = 400; }\nelse if (raw.startsWith('PRODUCT_NOT_FOUND'))   { code = 'PRODUCT_NOT_FOUND';    httpCode = 404; }\nelse if (raw.startsWith('MISSING_FIELD'))       { code = 'MISSING_FIELD';        httpCode = 422; }\nelse if (raw.startsWith('SCRAPER_ERROR'))       { code = 'SCRAPER_ERROR';        httpCode = 502; }\nelse if (raw.startsWith('AI_PARSE_ERROR'))      { code = 'AI_PARSE_ERROR';       httpCode = 502; }\nelse if (/timeout/i.test(raw))                  { code = 'API_TIMEOUT';          httpCode = 504; message = 'API_TIMEOUT: The request timed out. Please try again.'; }\nelse if (/google sheets/i.test(raw))            { code = 'SHEETS_WRITE_FAILURE'; httpCode = 500; }\n\nreturn [{ json: { success: false, code, message, httpCode, timestamp: new Date().toISOString() } }];"
+      },
+      "id": "467a30c4-86c1-4e5c-a281-7ca04dab3fa7",
+      "name": "Classify Error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        176
+      ],
+      "notesInFlow": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an expert shopping advisor.\n\nAnalyze this product:\n\nProduct Name: {{$json.productName}}\n\nCurrent Price: {{$json.currentPrice}}\n\nRating: {{$json.rating}}\n\nReview Count: {{$json.reviewCount}}\n\nAvailability: {{$json.availability}}\n\nReturn ONLY valid JSON.\n\n{\n\"buyScore\": 85,\n\"recommendation\": \"BUY NOW\",\n\"pros\": [\"Good ratings\"],\n\"cons\": [\"Price slightly high\"],\n\"riskFactors\": [\"Price may drop during sale\"],\n\"priceAssessment\": \"GOOD\",\n\"bestTimeToBuy\": \"NOW\",\n\"explanation\": \"Good product with positive reviews.\"\n}\n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        -144
+      ],
+      "id": "29f24160-a24c-4932-b875-819fdb62778b",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "w3RaIdb8BgJcAqNY",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "AI Shopping Advisor",
+        "formDescription": "Paste an Amazon or Flipkart product URL",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "productUrl",
+              "placeholder": "Yes"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -1104,
+        -96
+      ],
+      "id": "895e5b78-dcaf-4101-856c-b7411bb09adb",
+      "name": "On form submission",
+      "webhookId": "7c6a8a2c-3c86-4377-ab33-8c4b17e90005"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Analysis Complete",
+        "completionMessage": "Product analyzed successfully.\nCheck Google Sheets for results.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        592,
+        -176
+      ],
+      "id": "cb42573e-899d-4209-971d-147de02031d9",
+      "name": "Form",
+      "webhookId": "23755622-5235-4566-a30a-54fd83bda061",
+      "notesInFlow": true,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.scraperapi.com/",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "api_key",
+              "value": "55ddb2e6a5c438fdfa97f776527d4a3c"
+            },
+            {
+              "name": "url",
+              "value": "={{ $json.productUrl }}"
+            },
+            {
+              "name": "autoparse",
+              "value": "true"
+            },
+            {
+              "name": "render",
+              "value": "true"
+            },
+            {
+              "name": "country_code",
+              "value": "in"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 90000
+        }
+      },
+      "id": "28b61172-89c0-48c1-9d9c-d65cbde5e6f5",
+      "name": "Scrape Product",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -624,
+        -112
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "respondWith": "showText",
+        "responseText": "ERROR"
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        528,
+        176
+      ],
+      "id": "d10957e7-56f9-41d0-8176-b6221f501bb3",
+      "name": "Form1",
+      "webhookId": "3714b6d9-4b1e-497e-b316-a1c4e6bdb214"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Validate URL": {
+      "main": [
+        [
+          {
+            "node": "Scrape Product",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Classify Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process & Normalize Data": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Classify Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Response": {
+      "main": [
+        [
+          {
+            "node": "Save to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Classify Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Form",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Classify Error": {
+      "main": [
+        [
+          {
+            "node": "Form1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Validate URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Product": {
+      "main": [
+        [
+          {
+            "node": "Process & Normalize Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Classify Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "895f6e7b-a5f1-4d4f-bf11-2e9700c4aa69",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7eec1637e9e557efb27babfe83fdfc17f0d6f2e4de5c8541b968c84c0c276698"
+  },
+  "id": "S3T7jJiCf4FhuM9c",
+  "tags": []
+}
