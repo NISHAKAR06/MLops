@@ -1,0 +1,42 @@
+DOCUMENT_ID: FAQ_001
+CATEGORY: General E-Commerce FAQ
+
+Q: How do I price my product competitively on Amazon and Flipkart?
+A: Research your top 10 competitors and note their pricing. Start with penetration pricing — set your launch price 10-15% below the average competitor price. After collecting 20+ reviews and achieving 4+ star rating, gradually normalize to your target price. Always keep psychological pricing in mind (₹999 instead of ₹1000). Use the "Fulfilled by Amazon" (FBA) or "Flipkart Advantage" program to qualify for Prime/F-Assured badge which allows premium pricing.
+
+Q: What's the best way to get first reviews on a new product?
+A: Use Amazon's Early Reviewer Program and Vine program for verified reviews. Reach out to micro-influencers (10K-100K followers) in your niche for honest reviews in exchange for free products. Set up automated email sequences asking satisfied customers to leave reviews (within Amazon's ToS). Respond to all reviews — positive and negative — to show engagement.
+
+Q: How important is packaging for e-commerce sales?
+A: Extremely important. 35% of online buyers say packaging influences their repurchase decision. Invest in an unboxing experience — tissue paper, branded inserts, thank you cards. Include QR codes for warranty registration and tutorial videos. Eco-friendly packaging commands 28% higher customer satisfaction and encourages social media sharing.
+
+Q: What are the best keywords for my product listing?
+A: Use tools like Helium 10, Jungle Scout, or SellerApp to find high-volume, low-competition keywords. Include your primary keyword in the title (first 80 characters), bullet points, and backend search terms. Focus on long-tail keywords that reflect actual buyer intent (e.g., "wireless earbuds for gym workout with ANC" rather than just "wireless earbuds"). Refresh keywords every 3-6 months based on performance data.
+
+Q: When should I launch on Meesho vs Amazon vs Flipkart?
+A: Amazon is best for premium products and urban buyers. Flipkart has strong presence in Tier-2 and Tier-3 cities. Meesho is best for budget-friendly products targeting price-sensitive buyers. For maximum reach, launch on all three simultaneously. Start with Amazon for electronics/premium, Flipkart for fashion and home, and Meesho for budget alternatives.
+
+Q: How do I reduce product return rates?
+A: Accurate product descriptions and images reduce returns by 25%. Include size guides for fashion. Add unboxing and demo videos. Set realistic expectations in your listing. Include setup/usage guides in the package. For electronics, offer free installation or setup support. Monitor return reasons and address top causes in product descriptions.
+
+Q: What is the ideal launch discount percentage?
+A: 15-20% launch discount for the first 2-4 weeks works best. This creates urgency without devaluing the product permanently. Avoid discounts above 30% as it may signal quality concerns to buyers. Combine discount with limited-time messaging ("Early Bird Offer" or "Launch Price"). After launch phase, maintain pricing integrity for brand positioning.
+
+Q: How do I optimize product images for maximum conversion?
+A: Use professional white-background images for the main listing photo (Amazon requirement). Add lifestyle images showing product in use. Include infographic images highlighting key features. Add comparison images vs competitors. Resolution must be 1000x1000px minimum for zoom capability. Include at least 7 images. A+ content pages can increase conversion by 20-30%.
+---
+
+DOCUMENT_ID: FAQ_002
+CATEGORY: Customer Service & Reviews
+
+Q: How should I respond to negative reviews?
+A: Respond within 24 hours. Acknowledge the customer's issue without being defensive. Apologize for the inconvenience. Offer a resolution (replacement, refund, or support). Keep responses professional and empathetic. Never argue with reviewers. A well-handled negative review can actually build trust with potential buyers who see your responsiveness.
+
+Q: What customer complaints are most common for electronics?
+A: Top complaints: (1) Battery life not matching advertised specs — be conservative in your claims, (2) Connectivity issues — test Bluetooth/WiFi in multiple environments, (3) Build quality — ensure QC before dispatch, (4) Missing accessories or wrong items — improve warehouse verification, (5) Damaged in transit — improve packaging. Addressing these proactively in your listing description reduces complaints significantly.
+
+Q: How do I collect customer insights for product improvement?
+A: Monitor reviews weekly on all platforms. Use sentiment analysis on reviews to identify patterns. Send post-purchase surveys at 7 days and 30 days. Monitor competitor reviews to understand market gaps. Use social media listening tools (Brandwatch, Mention) to track organic mentions. Customer service tickets are goldmines — categorize and analyze complaint types.
+
+Q: What makes customers choose one product over another in the same price range?
+A: (1) Higher review count and rating — aim for 4.5+ stars, (2) Better main product image — first impression, (3) Faster delivery — Prime/F-Assured eligible, (4) Brand trust — invest in building brand story, (5) Better value perception — bundle accessories, (6) Clear return policy — risk reduction for buyer, (7) Verified answers to customer questions — shows seller engagement.
